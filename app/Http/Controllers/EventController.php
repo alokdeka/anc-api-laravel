@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Event;
+use Illuminate\Http\Request;
+
+class EventController extends Controller
+{
+    public function index()
+    {
+        $events = Event::orderBy('start_date', 'asc')->get();
+        return response()->json(['data' => $events]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'type' => 'required|in:Event,Holiday,Examination,Meeting',
+        ]);
+
+        $event = Event::create($validated);
+        return response()->json(['message' => 'Event created successfully', 'data' => $event], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'type' => 'required|in:Event,Holiday,Examination,Meeting',
+        ]);
+
+        $event->update($validated);
+        return response()->json(['message' => 'Event updated successfully', 'data' => $event]);
+    }
+
+    public function destroy($id)
+    {
+        $event = Event::findOrFail($id);
+        $event->delete();
+        return response()->json(['message' => 'Event deleted successfully']);
+    }
+}

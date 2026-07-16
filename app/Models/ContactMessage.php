@@ -10,7 +10,7 @@ class ContactMessage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'email', 'phone', 'subject', 'message', 'is_read'
+        'type', 'name', 'email', 'phone', 'subject', 'message', 'is_read'
     ];
 
     protected $casts = [

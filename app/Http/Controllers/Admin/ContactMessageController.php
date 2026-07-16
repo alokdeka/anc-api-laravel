@@ -17,6 +17,10 @@ class ContactMessageController extends Controller
             $query->where('is_read', $request->boolean('is_read'));
         }
 
+        if ($request->has('type') && $request->type !== 'all') {
+            $query->where('type', $request->type);
+        }
+
         return response()->json($query->paginate(20));
     }
 

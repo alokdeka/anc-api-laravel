@@ -16,6 +16,21 @@ class FormController extends Controller
         return response()->json($query->get());
     }
 
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'forms' => 'required|array',
+            'forms.*.id' => 'required|integer|exists:forms,id',
+            'forms.*.sort_order' => 'required|integer',
+        ]);
+
+        foreach ($request->forms as $form) {
+            Form::where('id', $form['id'])->update(['sort_order' => $form['sort_order']]);
+        }
+
+        return response()->json(['message' => 'Forms reordered successfully.']);
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([

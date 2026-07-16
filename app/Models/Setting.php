@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\RevalidatesFrontend;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-    use HasFactory;
+    use HasFactory, RevalidatesFrontend;
+
+    public function getRevalidatePaths()
+    {
+        return ['/', '/contact', '/programs'];
+    }
 
     protected $fillable = ['key', 'value', 'type', 'group', 'label'];
 

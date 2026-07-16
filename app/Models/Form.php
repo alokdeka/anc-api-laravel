@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\RevalidatesFrontend;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
@@ -9,7 +11,12 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Form extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, RevalidatesFrontend;
+
+    public function getRevalidatePaths()
+    {
+        return ['/forms'];
+    }
 
     protected $fillable = [
         'title', 'category', 'description', 'is_active', 'sort_order', 'uploaded_by', 'external_url',

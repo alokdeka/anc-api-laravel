@@ -22,7 +22,8 @@ Route::get('/sliders',           [Api\SliderController::class, 'index']);
 Route::get('/settings',          [Api\SettingsController::class, 'index']);
 Route::get('/cne',               [Api\CneController::class, 'index']);
 Route::get('/administration',    [Api\AdministrationController::class, 'index']);
-Route::post('/contact',          [Api\ContactController::class, 'store']);
+Route::post('/contact',          [Api\ContactController::class, 'store'])->middleware('throttle:5,1');
+Route::get('/events',            [App\Http\Controllers\EventController::class, 'index']);
 
 Route::prefix('examinations')->group(function () {
     Route::get('/timetable', [Api\ExaminationController::class, 'timetable']);
@@ -33,7 +34,7 @@ Route::middleware('throttle:10,1')->group(function () {
     Route::post('/registrations/verify', [Api\RegistrationController::class, 'verify']);
 });
 
-Route::post('/grievance', [Api\GrievanceController::class, 'submit']);
+Route::post('/grievance', [Api\GrievanceController::class, 'submit'])->middleware('throttle:5,1');
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +43,7 @@ Route::post('/grievance', [Api\GrievanceController::class, 'submit']);
 */
 
 Route::prefix('auth')->group(function () {
-    Route::post('/login',  [Admin\AuthController::class, 'login']);
+    Route::post('/login',  [Admin\AuthController::class, 'login'])->middleware('throttle:5,1');
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [Admin\AuthController::class, 'logout']);
         Route::get('/me',      [Admin\AuthController::class, 'me']);
@@ -68,6 +69,9 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     // Circulars & Messages
     Route::apiResource('circulars', Admin\CircularController::class);
     Route::get('contact-messages', [Admin\ContactMessageController::class, 'index']);
+    
+    // Events
+    Route::apiResource('events', App\Http\Controllers\EventController::class)->except(['index', 'show']);
     Route::patch('contact-messages/{message}/read', [Admin\ContactMessageController::class, 'markAsRead']);
     Route::delete('contact-messages/{message}', [Admin\ContactMessageController::class, 'destroy']);
 
@@ -75,6 +79,7 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::apiResource('institutes', Admin\InstituteController::class);
 
     // Downloadable Forms CRUD
+    Route::patch('forms/reorder', [Admin\FormController::class, 'reorder']);
     Route::apiResource('forms', Admin\FormController::class);
 
     // Nurse Registrations
