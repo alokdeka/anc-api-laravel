@@ -13,6 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'super_admin' => function (Request $request, $next) {
+                abort_if($request->user()?->role !== 'super_admin', 403, 'Unauthorized access.');
+                return $next($request);
+            }
+        ]);
+        
         $middleware->statefulApi();
         $middleware->validateCsrfTokens(except: [
             'api/contact',

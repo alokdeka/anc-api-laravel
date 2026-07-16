@@ -22,7 +22,7 @@ class UserController extends Controller
             'name'     => 'required|string|max:100',
             'email'    => 'required|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role'     => 'required|in:super_admin,registrar,editor,exam_cell',
+            'role'     => 'required|in:super_admin,editor',
         ]);
 
         $user = User::create([
@@ -50,7 +50,7 @@ class UserController extends Controller
             'name'      => 'sometimes|string|max:100',
             'email'     => 'sometimes|email|unique:users,email,' . $user->id,
             'password'  => 'nullable|string|min:8|confirmed',
-            'role'      => 'sometimes|in:super_admin,registrar,editor,exam_cell',
+            'role'      => 'sometimes|in:super_admin,editor',
             'is_active' => 'boolean',
         ]);
 

@@ -24,6 +24,16 @@ class SettingsController extends Controller
             'settings.*' => 'nullable|string',
         ]);
 
+        $user = $request->user();
+        if ($user->role !== 'super_admin') {
+            $allowedKeys = ['programs_page_content', 'about_page_content', 'contact_page_content', 'cne_eligibility_content'];
+            foreach (array_keys($request->settings) as $key) {
+                if (!in_array($key, $allowedKeys)) {
+                    abort(403, "Unauthorized to update setting: {$key}");
+                }
+            }
+        }
+
         foreach ($request->settings as $key => $value) {
             Setting::set($key, $value);
         }
@@ -42,6 +52,8 @@ class SettingsController extends Controller
 
     public function uploadPhoto(Request $request)
     {
+        abort_if($request->user()->role !== 'super_admin', 403, 'Unauthorized access.');
+
         $request->validate([
             'file' => 'required|image|max:5120',
             'key'  => 'required|string|in:president_photo,registrar_photo',

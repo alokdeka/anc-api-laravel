@@ -22,16 +22,16 @@ class AdminUserSeeder extends Seeder
 
         $admin->assignRole('super_admin');
 
-        // Registrar
-        $registrar = User::firstOrCreate(
-            ['email' => 'registrar@anmc.assam.gov.in'],
+        // Editor
+        $editor = User::firstOrCreate(
+            ['email' => 'editor@anmc.assam.gov.in'],
             [
-                'name'      => 'Council Registrar',
+                'name'      => 'Editor',
                 'password'  => Hash::make('password'),
-                'role'      => 'registrar',
+                'role'      => 'editor',
                 'is_active' => true,
             ]
         );
-        $registrar->assignRole('registrar');
+        $editor->assignRole('editor');
     }
 }
