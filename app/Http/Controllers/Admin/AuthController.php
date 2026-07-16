@@ -78,4 +78,62 @@ class AuthController extends Controller
             'permissions' => $user->getAllPermissions()->pluck('name'),
         ]);
     }
+
+    public function updateInfo(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+        ]);
+
+        $user->update($data);
+
+        AuditLog::create([
+            'user_id'     => $user->id,
+            'action'      => 'updated',
+            'description' => 'Admin user updated their profile info',
+            'ip_address'  => $request->ip(),
+        ]);
+
+        return response()->json([
+            'message' => 'Profile info updated successfully.',
+            'user' => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'role'  => $user->role,
+                'roles' => $user->getRoleNames(),
+            ]
+        ]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['The provided password does not match your current password.'],
+            ]);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        AuditLog::create([
+            'user_id'     => $user->id,
+            'action'      => 'updated',
+            'description' => 'Admin user updated their password',
+            'ip_address'  => $request->ip(),
+        ]);
+
+        return response()->json(['message' => 'Password updated successfully.']);
+    }
 }

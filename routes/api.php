@@ -18,6 +18,7 @@ Route::prefix('circulars')->group(function () {
 Route::get('/programs',          [Api\ProgramController::class, 'index']);
 Route::get('/institutes',        [Api\InstituteController::class, 'index']);
 Route::get('/forms',             [Api\FormController::class, 'index']);
+Route::get('/sliders',           [Api\SliderController::class, 'index']);
 Route::get('/settings',          [Api\SettingsController::class, 'index']);
 Route::get('/cne',               [Api\CneController::class, 'index']);
 Route::get('/administration',    [Api\AdministrationController::class, 'index']);
@@ -45,6 +46,8 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [Admin\AuthController::class, 'logout']);
         Route::get('/me',      [Admin\AuthController::class, 'me']);
+        Route::put('/profile/info',     [Admin\AuthController::class, 'updateInfo']);
+        Route::put('/profile/password', [Admin\AuthController::class, 'updatePassword']);
     });
 });
 
@@ -58,6 +61,9 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [Admin\DashboardController::class, 'index']);
+
+    // Sliders
+    Route::apiResource('sliders', Admin\SliderController::class);
 
     // Circulars & Messages
     Route::apiResource('circulars', Admin\CircularController::class);
@@ -81,8 +87,9 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::apiResource('users', Admin\UserController::class)->except(['show']);
 
     // Settings
-    Route::get('/settings',       [Admin\SettingsController::class, 'index']);
-    Route::post('/settings',      [Admin\SettingsController::class, 'update']);
+    Route::get('/settings',              [Admin\SettingsController::class, 'index']);
+    Route::post('/settings',             [Admin\SettingsController::class, 'update']);
+    Route::post('/settings/upload-photo',[Admin\SettingsController::class, 'uploadPhoto']);
     
     // Media Library
     Route::get('/media',          [Admin\MediaController::class, 'index']);

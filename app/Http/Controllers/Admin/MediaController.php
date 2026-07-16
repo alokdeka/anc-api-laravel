@@ -43,8 +43,8 @@ class MediaController extends Controller
         $filename = pathinfo($originalName, PATHINFO_FILENAME);
         $extension = $file->getClientOriginalExtension();
         
-        // Clean filename
-        $cleanFilename = Str::slug($filename) . '-' . time() . '.' . $extension;
+        // Shorten filename to prevent extremely long URLs
+        $cleanFilename = 'media-' . time() . '-' . Str::random(5) . '.' . $extension;
 
         $path = $file->storeAs('media', $cleanFilename, 'public');
 

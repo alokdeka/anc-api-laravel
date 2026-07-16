@@ -40,13 +40,16 @@ class CircularController extends Controller
             'external_url' => 'nullable|string|max:1000',
         ]);
 
-        $data['slug']      = Str::unique('circulars', Str::slug($data['title']));
+        $data['slug']      = Str::slug($data['title']) . '-' . Str::random(5);
         $data['author_id'] = $request->user()->id;
 
         $circular = Circular::create($data);
 
         if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $extension = $file->getClientOriginalExtension();
             $circular->addMediaFromRequest('attachment')
+                     ->usingFileName('attachment-' . time() . '-' . Str::random(5) . '.' . $extension)
                      ->toMediaCollection('attachments');
         }
 
@@ -86,7 +89,10 @@ class CircularController extends Controller
 
         if ($request->hasFile('attachment')) {
             $circular->clearMediaCollection('attachments');
+            $file = $request->file('attachment');
+            $extension = $file->getClientOriginalExtension();
             $circular->addMediaFromRequest('attachment')
+                     ->usingFileName('attachment-' . time() . '-' . Str::random(5) . '.' . $extension)
                      ->toMediaCollection('attachments');
         }
 
