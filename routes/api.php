@@ -103,9 +103,26 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     });
     
     // ----------------------------------------------------
-    // EDITOR ALLOWED (WITH INTERNAL PERMISSION CHECKS)
-    // ----------------------------------------------------
     Route::get('/settings',              [Admin\SettingsController::class, 'index']);
     Route::post('/settings',             [Admin\SettingsController::class, 'update']);
     Route::post('/settings/upload-photo',[Admin\SettingsController::class, 'uploadPhoto']);
+});
+
+// TEMPORARY DATABASE CLEANUP ROUTE
+Route::get('/clean-db', function () {
+    $domains = ['http://localhost:8000', 'https://api.assamnursingcouncil.com'];
+    foreach ($domains as $domain) {
+        \Illuminate\Support\Facades\DB::statement("UPDATE settings SET value = REPLACE(value, '{$domain}', '') WHERE value LIKE '{$domain}%'");
+        \Illuminate\Support\Facades\DB::statement("UPDATE sliders SET external_image_url = REPLACE(external_image_url, '{$domain}', '') WHERE external_image_url LIKE '{$domain}%'");
+        \Illuminate\Support\Facades\DB::statement("UPDATE circulars SET external_url = REPLACE(external_url, '{$domain}', '') WHERE external_url LIKE '{$domain}%'");
+        \Illuminate\Support\Facades\DB::statement("UPDATE forms SET external_url = REPLACE(external_url, '{$domain}', '') WHERE external_url LIKE '{$domain}%'");
+        \Illuminate\Support\Facades\DB::statement("UPDATE institutes SET external_url = REPLACE(external_url, '{$domain}', '') WHERE external_url LIKE '{$domain}%'");
+        \Illuminate\Support\Facades\DB::statement("UPDATE institutes SET file_path = REPLACE(file_path, '{$domain}', '') WHERE file_path LIKE '{$domain}%'");
+    }
+    
+    // Most importantly, forcefully clear the Laravel configuration cache!
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    
+    return 'Database cleaned! Absolute URLs removed and Cache completely destroyed!';
 });
