@@ -97,6 +97,9 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
         
         // Audit Log (read-only)
         Route::get('/audit-log',      [Admin\AuditLogController::class, 'index']);
+
+        // Database Backup
+        Route::get('/backup/download', [Admin\BackupController::class, 'download']);
     });
     
     // ----------------------------------------------------
