@@ -18,7 +18,7 @@ class MediaController extends Controller
         foreach ($files as $file) {
             $media[] = [
                 'name' => basename($file),
-                'url' => asset('storage/' . $file),
+                'url' => '/storage/' . $file,
                 'size' => Storage::disk('public')->size($file),
                 'last_modified' => Storage::disk('public')->lastModified($file),
             ];
@@ -60,7 +60,7 @@ class MediaController extends Controller
             'message' => 'File uploaded successfully',
             'data' => [
                 'name' => $cleanFilename,
-                'url' => asset('storage/' . $path),
+                'url' => '/storage/' . $path,
             ]
         ], 201);
     }

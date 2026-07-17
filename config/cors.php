@@ -7,7 +7,10 @@ return [
         env('FRONTEND_PUBLIC_URL', 'http://localhost:3000'),
         env('FRONTEND_ADMIN_URL', 'http://localhost:5173'),
     ],
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https?://.*\.vercel\.app$#',
+        '#^https?://localhost:\d+$#',
+    ],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
     'max_age' => 0,
